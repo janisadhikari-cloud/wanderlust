@@ -1,0 +1,32 @@
+version: "3.9"
+services:
+  frontend:
+    image: janisadhi/frontendT:v1
+    ports:
+     - "5173:80"
+    container_name: frontend_compose
+    networks:
+     - "wanderlust"
+
+  backend:
+    image: janisadhi/backendT:v1
+    ports:
+     - "5000:5000"
+    container_name: backend_compose
+    networks:
+    - "wanderlust"
+    environment:
+    - MONGODB_URI=mongodb://mongodb_compose:27017/wanderlust
+    depends_on:
+    - database
+  database:
+    image: mongo:latest
+    ports:
+    - "27017:27017"
+    container_name: mongodb_compose
+    networks:
+    - "wanderlust"
+
+networks:
+  wanderlust:
+    driver: bridge
