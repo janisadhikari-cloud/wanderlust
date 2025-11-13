@@ -54,5 +54,65 @@ jobs:
     - name: docker-compose up
       run: docker-compose up -d
 
-    - name: print ip 
+    - name: print ip
       run: ip a
+name: Wanderlust CI
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  frontend_build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USR }}
+          password: ${{ secrets.DOCKERHUB_PSS }}
+
+      - name: Build Docker image
+        run: docker build -t janisadhi/frontendt:v1 frontend/
+
+      - name: Push Docker image to Dockerhub
+        run: docker push janisadhi/frontendt:v1
+
+  backend_build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USR }}
+          password: ${{ secrets.DOCKERHUB_PSS }}
+
+      - name: Build Docker image
+        run: docker build -t janisadhi/backendt:v1 -f backend/local.dockerfile backend/
+
+      - name: Push Docker image to Dockerhub
+        run: docker push janisadhi/backendt:v1
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs:
+      - frontend_build
+      - backend_build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Docker Compose
+        run: sudo apt-get update && sudo apt-get install -y docker-compose
+
+      - name: Docker Compose Up
+        run: docker compose up -d
+
+      - name: Print IP
+        run: ip a
