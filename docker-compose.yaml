@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   frontend:
-    image: janisadhi/frontendT:v1
+    image: janisadhi/frontendt:v1
     ports:
      - "5173:80"
     container_name: frontend_compose
@@ -9,7 +9,7 @@ services:
      - "wanderlust"
 
   backend:
-    image: janisadhi/backendT:v1
+    image: janisadhi/backendt:v1
     ports:
      - "5000:5000"
     container_name: backend_compose
